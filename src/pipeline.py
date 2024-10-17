@@ -1288,8 +1288,6 @@ def load_pipeline() -> StableDiffusionXLPipeline:
         torch_dtype=torch.float16,
         local_files_only=True,
     )
-    #pipeline.vae = AutoencoderTiny.from_pretrained("madebyollin/taesdxl", torch_dtype=torch.float16)
-    #pipeline.scheduler = UniPCMultistepScheduler.from_config('./src',)
     pipeline.to("cuda")
 
     config = CompilationConfig.Default()
@@ -1305,6 +1303,7 @@ def load_pipeline() -> StableDiffusionXLPipeline:
     except ImportError:
         print('Triton not installed, skip')
     config.enable_cuda_graph = True
+    config.preserve_parameters = False
     pipeline = compile(pipeline, config)
     for _ in range(3):
         pipeline(prompt="an astronaut on a horse", num_inference_steps=14)
